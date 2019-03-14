@@ -2,21 +2,24 @@ const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const compression = require('compression')
-const session = require('express-session')
+const sessionExpress = require('express-session')
 const passport = require('passport')
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-const db = require('./db')
-const sessionStore = new SequelizeStore({db})
+const SequelizeStore = require('connect-session-sequelize')(
+  sessionExpress.Store
+)
+// const db = require('./db')
+// const sessionStore = new SequelizeStore({db})
 const PORT = process.env.PORT || 8080
 const app = express()
 const socketio = require('socket.io')
+const {session} = require('../server/db/neo')
 module.exports = app
 
 // This is a global Mocha hook, used for resource cleanup.
 // Otherwise, Mocha v4+ never quits after tests.
-if (process.env.NODE_ENV === 'test') {
-  after('close the session store', () => sessionStore.stopExpiringSessions())
-}
+// if (process.env.NODE_ENV === 'test') {
+//   after('close the session store', () => sessionStore.stopExpiringSessions())
+// }
 
 /**
  * In your development environment, you can keep all of your
@@ -53,9 +56,9 @@ const createApp = () => {
 
   // session middleware with passport
   app.use(
-    session({
+    sessionExpress({
       secret: process.env.SESSION_SECRET || 'my best friend is Cody',
-      store: sessionStore,
+      // store: sessionStore,
       resave: false,
       saveUninitialized: false
     })
@@ -108,8 +111,8 @@ const startListening = () => {
 const syncDb = () => db.sync()
 
 async function bootApp() {
-  await sessionStore.sync()
-  await syncDb()
+  // await sessionStore.sync()
+  // await syncDb()
   await createApp()
   await startListening()
 }
