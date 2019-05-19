@@ -8,8 +8,6 @@ const graphURI = process.env.GRAPH_BOLT_URI
 const graphUsername = process.env.GRAPH_BOLT_USER
 const graphPassword = process.env.GRAPH_BOLT_PASSWORD
 
-console.log('appDir: ', appDir)
-
 let cypherQuery = `
 create constraint on (m:Movie) assert m.id is unique;
 create constraint on (l:Language) assert l.name is unique;
@@ -22,4 +20,7 @@ fieldterminator '\t'
 create (movie:Movie {id: TOINT(line.titleId), title: line.title})
 
 merge(language:Language {name: line.language})
+;
 `
+
+console.log('cypherQuery: ', cypherQuery)
